@@ -125,13 +125,16 @@ public class SingleHotSwap extends CompileAction {
         ProjectTaskManager projectTaskManager = ProjectTaskManager.getInstance( project );
         DebuggerSettings settings = DebuggerSettings.getInstance();
 
-        // No hotswap for this compile
+        // Store previous state of this flag because you can toggle it in the IntelliJ settings
         String prevRunHotswap = settings.RUN_HOTSWAP_AFTER_COMPILE;
+
+        // We disable the RUN_HOTSWAP_AFTER_COMPILE flag because the built-in hotswap of
+        // IntelliJ always reloads every single file that is referenced by the target class.
         settings.RUN_HOTSWAP_AFTER_COMPILE = DebuggerSettings.RUN_HOTSWAP_NEVER;
 
         // Compile
         projectTaskManager.compile( virtualFile ).onProcessed( result -> {
-            // Change setting back to previous state
+            // Change the flag back to it's previous state
             settings.RUN_HOTSWAP_AFTER_COMPILE = prevRunHotswap;
 
             // Run callback with success state
