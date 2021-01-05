@@ -19,7 +19,7 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="Single Hotswap" displayType="balloon" key="SingleHotswap"/>
+        <notificationGroup id="SingleHotswap" displayType="BALLOON"/>
     </extensions>
 
     <actions>
