@@ -8,8 +8,9 @@ import com.intellij.debugger.impl.HotSwapFile;
 import com.intellij.debugger.impl.HotSwapManager;
 import com.intellij.debugger.settings.DebuggerSettings;
 import com.intellij.debugger.ui.HotSwapProgressImpl;
-import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -34,8 +35,6 @@ import java.util.function.Consumer;
 
 public class SingleHotSwap extends CompileAction {
 
-    private static final NotificationGroup NOTIFICATION_GROUP = NotificationGroup.toolWindowGroup( "SingleHotSwap", "Debug" );
-
     /**
      * Update the visibility of the single hotswap button
      * The button is only visible if the debug session is running and a compilable file is available.
@@ -57,9 +56,28 @@ public class SingleHotSwap extends CompileAction {
             VirtualFile[] compilableFiles = getCompilableFiles( project, availableFiles );
             CompilerManager compileManager = CompilerManager.getInstance( project );
 
-            // Update button enabled state
-            boolean enabled = debuggerSession != null && compilableFiles.length > 0 && !compileManager.isCompilationActive();
+            // Gte the current target file
+            PsiFile currentFile = event.getData( CommonDataKeys.PSI_FILE );
+
+            // Define button state
+            boolean enabled = debuggerSession != null
+                    && compilableFiles.length > 0
+                    && !compileManager.isCompilationActive()
+                    && currentFile instanceof PsiJavaFile;
+
+            // Update state
             presentation.setEnabled( enabled );
+
+            // Update status text
+            if ( enabled ) {
+                presentation.setText( "Hotswap '" + currentFile.getName() + "'" );
+            } else {
+                if ( debuggerSession == null ) {
+                    presentation.setText( "Single Hotswap (Only Available in Debug Session)" );
+                } else {
+                    presentation.setText( "Single Hotswap (Only Available with an Opened Java File)" );
+                }
+            }
         }
     }
 
@@ -81,15 +99,17 @@ public class SingleHotSwap extends CompileAction {
             // Compile a single file
             compileSingleFile( project, javaFile.getVirtualFile(), success -> {
                 if ( !success ) {
-                    notifyUser( project, "Could not compile " + javaFile.getName(), NotificationType.ERROR );
+                    notifyUser( "Could not compile " + javaFile.getName(), NotificationType.ERROR );
                     return;
                 }
 
                 // Single file compilation successful, now we have to hotswap this file
                 if ( !hotswapSingleFile( project, javaFile ) ) {
-                    notifyUser( project, "Could not hotswap " + javaFile.getName(), NotificationType.ERROR );
+                    notifyUser( "Could not hotswap " + javaFile.getName(), NotificationType.ERROR );
                 }
             } );
+        } else if ( file != null ) {
+            notifyUser( "Invalid file to hotswap: " + file.getName(), NotificationType.WARNING );
         }
     }
 
@@ -178,12 +198,12 @@ public class SingleHotSwap extends CompileAction {
         Map<DebuggerSession, Map<String, HotSwapFile>> modifiedClasses = new HashMap<>();
         modifiedClasses.put( debuggerSession, value );
 
+        // Create hotswap progress
+        HotSwapProgressImpl progress = new HotSwapProgressImpl( project );
+
         // Execute application thread
         Application application = ApplicationManager.getApplication();
         application.executeOnPooledThread( ( ) -> {
-            // Create hotswap progress
-            HotSwapProgressImpl progress = new HotSwapProgressImpl( project );
-
             // Run the progress
             ProgressManager.getInstance().runProcess( ( ) -> {
                 // Reload all classes in our map
@@ -198,13 +218,10 @@ public class SingleHotSwap extends CompileAction {
     /**
      * Notify the user with a notification.
      *
-     * @param project Instance of the current project
      * @param message The message of the notification
      * @param type    The notification type
      */
-    private void notifyUser( Project project, String message, NotificationType type ) {
-        NOTIFICATION_GROUP.createNotification( "SingleHotSwap", "", message, type )
-                .setImportant( false )
-                .notify( project );
+    private void notifyUser( String message, NotificationType type ) {
+        Notifications.Bus.notify( new Notification( "SingleHotswap", "Single hotswap", message, type ) );
     }
 }

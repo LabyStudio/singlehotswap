@@ -1,8 +1,10 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia GmbH</vendor>
+
+    <idea-version since-build="201.000"/>
 
     <description><![CDATA[
       With this plugin you can hotswap a single file that is selected.
@@ -13,12 +15,11 @@
       that is referenced by the target class.
     ]]></description>
 
-    <idea-version since-build="201.000"/>
-
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Single Hotswap" displayType="balloon" key="SingleHotswap"/>
     </extensions>
 
     <actions>
@@ -29,5 +30,20 @@
                           relative-to-action="RunConfiguration"/>
         </action>
     </actions>
+
+    <change-notes>
+        <![CDATA[
+    v1.1 (05.01.2021):
+    <ul>
+      <li>Updated to latest IntelliJ version</li>
+      <li>Published on GitHub</li>
+    </ul>
+
+    v1.0 (06.08.2020):
+    <ul>
+      <li>First version published</li>
+    </ul>
+    ]]>
+    </change-notes>
 
 </idea-plugin>

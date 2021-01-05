@@ -12,7 +12,10 @@ dependencies {
 }
 
 intellij {
-    version = "IC-2020.2"
+    version = "IC-2020.3"
     plugins = ["java"]
     pluginName "Single Hotswap"
+
+    // Compatibility with future IDE versions
+    updateSinceUntilBuild = false
 }

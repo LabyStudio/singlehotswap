@@ -1,5 +1,7 @@
 # Single Hotswap for IntelliJ
 
+### Download from [IntelliJ Marketplace](https://plugins.jetbrains.com/plugin/14832-single-hotswap)
+
 With this plugin you can hotswap a single file that is selected.
 It will provide a blue hammer next to the green "Build Project" hammer.
 
