@@ -1,0 +1,33 @@
+<idea-plugin>
+    <id>net.labymod.intellij.singlehotswap</id>
+    <name>Single Hotswap</name>
+    <version>1.0</version>
+    <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia GmbH</vendor>
+
+    <description><![CDATA[
+      With this plugin you can hotswap a single file that is selected.
+      It will provide a blue hammer next to the green "Build Project" hammer.
+      <br>
+      <br>
+      The builtin feature of Intellij "Compile and Reload" always reloads every single file
+      that is referenced by the target class.
+    ]]></description>
+
+    <idea-version since-build="201.000"/>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+        <action id="org.intellij.sdk.action.PopupDialogAction" class="net.labymod.intellij.singlehotswap.SingleHotSwap"
+                text="Single Hotswap" description="Hotswap just the opened file"
+                icon="SingleHotSwapIcons.SINGLE_HOTSWAP">
+            <add-to-group anchor="before" group-id="ToolbarRunGroup"
+                          relative-to-action="RunConfiguration"/>
+        </action>
+    </actions>
+
+</idea-plugin>
