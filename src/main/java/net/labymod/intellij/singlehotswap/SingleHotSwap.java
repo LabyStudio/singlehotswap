@@ -56,7 +56,7 @@ public class SingleHotSwap extends CompileAction {
             VirtualFile[] compilableFiles = getCompilableFiles( project, availableFiles );
             CompilerManager compileManager = CompilerManager.getInstance( project );
 
-            // Gte the current target file
+            // Get the current target file
             PsiFile currentFile = event.getData( CommonDataKeys.PSI_FILE );
 
             // Define button state
