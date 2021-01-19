@@ -1,8 +1,8 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>1.1</version>
-    <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia GmbH</vendor>
+    <version>1.2</version>
+    <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="201.000"/>
 
@@ -33,6 +33,11 @@
 
     <change-notes>
         <![CDATA[
+    v1.2 (19.01.2021):
+    <ul>
+      <li>Support for inner classes</li>
+    </ul>
+
     v1.1 (05.01.2021):
     <ul>
       <li>Updated to latest IntelliJ version</li>

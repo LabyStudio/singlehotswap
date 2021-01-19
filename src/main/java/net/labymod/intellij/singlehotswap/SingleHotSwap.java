@@ -152,12 +152,12 @@ public class SingleHotSwap extends CompileAction {
      */
     private boolean hotswapSingleFile( Project project, PsiJavaFile psiFile ) {
         // Get name, file name and class name
-        String name = psiFile.getName();
-        String fileName = name.substring( 0, name.toLowerCase().lastIndexOf( ".java" ) );
+        String fileName = psiFile.getName();
+        String classNameWithoutPackage = fileName.substring( 0, fileName.toLowerCase().lastIndexOf( ".java" ) );
         String packageName = psiFile.getPackageName();
 
         // Create the full class name
-        String className = packageName.isEmpty() ? fileName : ( packageName + "." + fileName );
+        String className = packageName.isEmpty() ? classNameWithoutPackage : ( packageName + "." + classNameWithoutPackage );
 
         // Find the class name in the output paths of the project
         String[] outputPaths = CompilerPaths.getOutputPaths( ModuleManager.getInstance( project ).getModules() );
@@ -168,7 +168,28 @@ public class SingleHotSwap extends CompileAction {
 
             // Hotswap the file if exists
             if ( file.exists() ) {
+                // Just compile the target file
                 hotswapSingleFile( project, className, file );
+
+                // List all compiled files in this directory to find inner classes
+                File[] filesInPackage = file.getParentFile().listFiles();
+
+                // This should never happen but we check it in case
+                if ( filesInPackage != null ) {
+                    // Find inner classes
+                    for ( File fileInPackage : filesInPackage ) {
+                        String innerFullClassName = fileInPackage.getName();
+
+                        // Check if it's an inner class of the target class
+                        if ( innerFullClassName.startsWith( classNameWithoutPackage + "$" ) ) {
+                            String innerFileName = innerFullClassName.split( "\\$" )[1];
+                            String innerClassName = className + "$" + innerFileName.substring( 0, innerFileName.lastIndexOf( ".class" ) );
+
+                            // Compile the inner class of the target class
+                            hotswapSingleFile( project, innerClassName, fileInPackage );
+                        }
+                    }
+                }
 
                 // Successfully executed
                 return true;
