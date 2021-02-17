@@ -172,7 +172,7 @@ public class SingleHotSwap extends CompileAction {
                 hotswapSingleFile( project, className, file );
 
                 // List all compiled files in this directory to find inner classes
-                File[] filesInPackage = file.getParentFile().listFiles();
+                File[] filesInPackage = file.getParentFile() == null ? null : file.getParentFile().listFiles();
 
                 // This should never happen but we check it in case
                 if ( filesInPackage != null ) {
