@@ -1,6 +1,11 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.21'
+    id 'org.jetbrains.intellij' version '0.6.5'
+}
+
+compileJava   {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 }
 
 repositories {
@@ -12,7 +17,7 @@ dependencies {
 }
 
 intellij {
-    version = "IC-2020.3"
+    version = "IC-2020.3.2"
     plugins = ["java"]
     pluginName "Single Hotswap"
 
