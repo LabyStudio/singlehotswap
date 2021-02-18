@@ -35,7 +35,7 @@
         <![CDATA[
     v1.3 (17.02.2021):
     <ul>
-      <li>Fixed an exception during hotspot</li>
+      <li>Fixed an exception during hotswap</li>
     </ul>
     v1.2 (19.01.2021):
     <ul>
