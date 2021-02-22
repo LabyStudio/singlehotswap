@@ -7,12 +7,11 @@
     <idea-version since-build="201.000"/>
 
     <description><![CDATA[
-      With this plugin you can hotswap a single file that is selected.
-      It will provide a blue hammer next to the green "Build Project" hammer.
-      <br>
-      <br>
+      With this plugin you can hotswap way faster than usual by hotswapping only the file opened in the editor.
       The builtin feature of Intellij "Compile and Reload" always reloads every single file
       that is referenced by the target class.
+      <br>
+      This plugin will provide a blue hammer next to the green "Build Project" hammer.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
@@ -33,6 +32,10 @@
 
     <change-notes>
         <![CDATA[
+    v1.4 (22.02.2021):
+    <ul>
+      <li>Fixed an exception that occurred when exiting the debugger during hotswapping</li>
+    </ul>
     v1.3 (17.02.2021):
     <ul>
       <li>Fixed an exception during hotswap</li>

@@ -207,11 +207,17 @@ public class SingleHotSwap extends CompileAction {
      * @param project   Instance of the current project containing the target file
      * @param className The target class name of the file to hotswap
      * @param file      The target file to hotswap
+     * @return Debugger session is available
      */
-    private void hotswapSingleFile( Project project, String className, File file ) {
+    private boolean hotswapSingleFile( Project project, String className, File file ) {
         // Get debugger
         DebuggerManagerEx debuggerManager = DebuggerManagerEx.getInstanceEx( project );
         DebuggerSession debuggerSession = debuggerManager.getContext().getDebuggerSession();
+
+        // Debugger session is not available
+        if ( debuggerSession == null ) {
+            return false;
+        }
 
         // Create map of files to hotswap
         ImmutableMap<String, HotSwapFile> value = ImmutableMap.<String, HotSwapFile>builder()
@@ -237,6 +243,9 @@ public class SingleHotSwap extends CompileAction {
                 progress.finished();
             }, progress.getProgressIndicator() );
         } );
+
+        // Debugger session is available
+        return true;
     }
 
     /**
