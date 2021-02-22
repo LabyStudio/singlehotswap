@@ -1,4 +1,4 @@
-# Single Hotswap for IntelliJ ![](src/main/resources/META-INF/pluginIcon.svg)
+# Single Hotswap for IntelliJ ![](.artwork/intellij.png)
 
 ### Download from [IntelliJ Marketplace](https://plugins.jetbrains.com/plugin/14832-single-hotswap)
 
