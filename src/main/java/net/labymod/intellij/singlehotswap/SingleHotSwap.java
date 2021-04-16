@@ -22,10 +22,13 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClassOwner;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiImportHolder;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.task.ProjectTaskManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.plugins.groovy.lang.psi.GroovyFile;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -63,7 +66,7 @@ public class SingleHotSwap extends CompileAction {
             boolean enabled = debuggerSession != null
                     && compilableFiles.length > 0
                     && !compileManager.isCompilationActive()
-                    && currentFile instanceof PsiJavaFile;
+                    && ( currentFile instanceof PsiJavaFile || currentFile instanceof GroovyFile);
 
             // Update state
             presentation.setEnabled( enabled );
@@ -93,20 +96,26 @@ public class SingleHotSwap extends CompileAction {
         PsiFile file = event.getData( CommonDataKeys.PSI_FILE );
 
         // Is the target file a valid java file?
-        if ( project != null && file instanceof PsiJavaFile ) {
-            PsiJavaFile javaFile = (PsiJavaFile) file;
+        if ( project != null & (file instanceof PsiJavaFile || file instanceof GroovyFile)) {
 
             // Compile a single file
-            compileSingleFile( project, javaFile.getVirtualFile(), success -> {
+            compileSingleFile( project, file.getVirtualFile(), success -> {
                 if ( !success ) {
-                    notifyUser( "Could not compile " + javaFile.getName(), NotificationType.ERROR );
+                    notifyUser( "Could not compile " + file.getName(), NotificationType.ERROR );
                     return;
                 }
 
                 // Single file compilation successful, now we have to hotswap this file
-                if ( !hotswapSingleFile( project, javaFile ) ) {
-                    notifyUser( "Could not hotswap " + javaFile.getName(), NotificationType.ERROR );
+                if (file instanceof PsiJavaFile) {
+                    if ( !hotswapSingleFile( project, (PsiJavaFile) file) ) {
+                        notifyUser( "Could not hotswap " + file.getName(), NotificationType.ERROR );
+                    }
+                } else {
+                    if ( !hotswapSingleFile( project, (GroovyFile) file) ) {
+                        notifyUser( "Could not hotswap " + file.getName(), NotificationType.ERROR );
+                    }
                 }
+
             } );
         } else if ( file != null ) {
             notifyUser( "Invalid file to hotswap: " + file.getName(), NotificationType.WARNING );
@@ -147,18 +156,41 @@ public class SingleHotSwap extends CompileAction {
      * This function gets the class name of the specified file and executes {@link #hotswapSingleFile(Project, String, File)}
      *
      * @param project Instance of the current project containing the target file
-     * @param psiFile The target java file to hotswap
+     * @param javaFile The target java file to hotswap
      * @return Hotswap successfully executed if the class name is available in the output paths
      */
-    private boolean hotswapSingleFile( Project project, PsiJavaFile psiFile ) {
+    private boolean hotswapSingleFile( Project project, PsiJavaFile javaFile ) {
         // Get name, file name and class name
-        String fileName = psiFile.getName();
+        String fileName = javaFile.getName();
         String classNameWithoutPackage = fileName.substring( 0, fileName.toLowerCase().lastIndexOf( ".java" ) );
-        String packageName = psiFile.getPackageName();
+        String packageName = javaFile.getPackageName();
 
         // Create the full class name
         String className = packageName.isEmpty() ? classNameWithoutPackage : ( packageName + "." + classNameWithoutPackage );
 
+        return hotswapSingleFile(project, classNameWithoutPackage, className);
+    }
+
+    /**
+     * Hotswap a single file using the an instance of GroovyFile.
+     * This function gets the class name of the specified file and executes {@link #hotswapSingleFile(Project, String, File)}
+     *
+     * @param project Instance of the current project containing the target file
+     * @param groovyFile The target Groovy file to hotswap
+     * @return Hotswap successfully executed if the class name is available in the output paths
+     */
+    private boolean hotswapSingleFile( Project project, GroovyFile groovyFile ) {
+        // Get name, file name and class name
+        String fileName = groovyFile.getName();
+        String classNameWithoutPackage = fileName.substring( 0, fileName.toLowerCase().lastIndexOf( ".groovy" ) );
+        String packageName = groovyFile.getPackageName();
+
+        // Create the full class name
+        String className = packageName.isEmpty() ? classNameWithoutPackage : ( packageName + "." + classNameWithoutPackage );
+        return hotswapSingleFile(project, classNameWithoutPackage, className);
+    }
+
+    private boolean hotswapSingleFile(Project project, String classNameWithoutPackage, String className) {
         // Find the class name in the output paths of the project
         String[] outputPaths = CompilerPaths.getOutputPaths( ModuleManager.getInstance( project ).getModules() );
         for ( String outputPath : outputPaths ) {
