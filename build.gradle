@@ -4,8 +4,8 @@ plugins {
 }
 
 compileJava   {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -18,7 +18,7 @@ dependencies {
 
 intellij {
     version = "IC-2020.3.2"
-    plugins = ["java"]
+    plugins = ["Groovy", "java", "properties"]
     pluginName "Single Hotswap"
 
     // Compatibility with future IDE versions
