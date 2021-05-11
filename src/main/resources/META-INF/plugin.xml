@@ -7,11 +7,11 @@
     <idea-version since-build="201.000"/>
 
     <description><![CDATA[
-      With this plugin you can hotswap way faster than usual by hotswapping only the file opened in the editor.
-      The builtin feature of Intellij "Compile and Reload" always reloads every single file
-      that is referenced by the target class.
-      <br>
-      This plugin will provide a blue hammer next to the green "Build Project" hammer.
+    With this plugin you can hotswap <b>way faster</b> than usual by hotswapping <b>only the file opened</b> in the editor.<br>
+    The builtin feature of Intellij "Compile and Reload" always reloads every single file that is referenced by the target class.<br>
+    Therefore, this plugin gives you a better control what exactly you want to hotswap.<br>
+    <br>
+    <i>It will provide a blue hammer next to the green "Build Project" hammer.</i>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
