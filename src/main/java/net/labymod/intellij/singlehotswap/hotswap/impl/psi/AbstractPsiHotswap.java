@@ -72,10 +72,13 @@ public abstract class AbstractPsiHotswap<T> implements IHotswap {
                         // Check if it's an inner class of the target class
                         if ( innerFullClassName.startsWith( classNameWithoutPackage + "$" ) ) {
                             String innerFileName = innerFullClassName.split( "\\$" )[1];
-                            String innerClassName = className + "$" + innerFileName.substring( 0, innerFileName.lastIndexOf( ".class" ) );
 
-                            // Compile the inner class of the target class
-                            files.put( innerClassName, new HotSwapFile( fileInPackage ) );
+                            if ( innerFileName.contains( ".class" ) ) {
+                                String innerClassName = className + "$" + innerFileName.substring( 0, innerFileName.lastIndexOf( ".class" ) );
+
+                                // Compile the inner class of the target class
+                                files.put( innerClassName, new HotSwapFile( fileInPackage ) );
+                            }
                         }
                     }
                 }
