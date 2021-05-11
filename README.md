@@ -6,7 +6,8 @@ With this plugin you can hotswap **way faster** than usual by hotswapping **only
 The builtin feature of Intellij "Compile and Reload" always reloads every single file that is referenced by the target class.<br>
 Therefore, this plugin gives you a better control what exactly you want to hotswap.
 
-*It will provide a blue hammer next to the green "Build Project" hammer.*
+*It will provide a blue hammer next to the green "Build Project" hammer.*<br>
+*Supports Java, Kotlin and Groovy*
 
 ![Hotswap button](.artwork/hotswap_button.png)
 
