@@ -18,7 +18,7 @@ dependencies {
 
 intellij {
     version = "IC-2020.3.2"
-    plugins = ["Groovy", "java", "properties"]
+    plugins = ["Kotlin", "Groovy", "java", "properties"]
     pluginName "Single Hotswap"
 
     // Compatibility with future IDE versions
