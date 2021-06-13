@@ -87,12 +87,12 @@ public class SingleHotswapAction extends CompileAction {
      */
     @Override
     public void actionPerformed( @NotNull AnActionEvent event ) {
-        Project project = event.getProject();
         PsiFile file = event.getData( CommonDataKeys.PSI_FILE );
+        Project project = file == null ? null : file.getProject();
         IHotswap hotswap = EnumFileType.find( file );
 
         // Is the target file a valid java file?
-        if ( project != null && file != null && hotswap.isPossible( file ) ) {
+        if ( project != null && hotswap.isPossible( file ) ) {
 
             // Compile a single file
             compileSingleFile( project, file.getVirtualFile(), success -> {
@@ -135,7 +135,7 @@ public class SingleHotswapAction extends CompileAction {
             settings.RUN_HOTSWAP_AFTER_COMPILE = prevRunHotswap;
 
             // Run callback with success state
-            callback.accept( !result.hasErrors() );
+            callback.accept( result != null && !result.hasErrors() );
         } );
     }
 

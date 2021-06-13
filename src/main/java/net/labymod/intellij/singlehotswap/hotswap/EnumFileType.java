@@ -1,10 +1,10 @@
 package net.labymod.intellij.singlehotswap.hotswap;
 
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.psi.PsiFile;
-import net.labymod.intellij.singlehotswap.hotswap.impl.DefaultHotswap;
-import net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.GroovyHotswap;
-import net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.JavaHotswap;
-import net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.KotlinHotswap;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * All available file types for single hot-swapping
@@ -12,10 +12,22 @@ import net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.KotlinHotswap;
  * @author LabyStudio
  */
 public enum EnumFileType {
-    NONE( DefaultHotswap.class ),
-    JAVA( JavaHotswap.class ),
-    GROOVY( GroovyHotswap.class ),
-    KOTLIN( KotlinHotswap.class );
+    NONE(
+            "net.labymod.intellij.singlehotswap.hotswap.impl.DefaultHotswap",
+            null
+    ),
+    JAVA(
+            "net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.JavaHotswap",
+            "com.intellij.java"
+    ),
+    GROOVY(
+            "net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.GroovyHotswap",
+            "org.intellij.groovy"
+    ),
+    KOTLIN(
+            "net.labymod.intellij.singlehotswap.hotswap.impl.psi.type.KotlinHotswap",
+            "org.jetbrains.kotlin"
+    );
 
     /**
      * Hotswap implementation
@@ -23,13 +35,24 @@ public enum EnumFileType {
     private IHotswap hotswap;
 
     /**
-     * Creates and instance of the given implementation class for hot-swapping
+     * Creates and instance of the given implementation class for hot-swapping if the required plugin is available
      *
-     * @param clazz Hotswap implementation class
+     * @param className        Hotswap implementation class
+     * @param requiredPluginId The required plugin for this hotswap type
      */
-    EnumFileType( Class<? extends IHotswap> clazz ) {
+    EnumFileType( String className, String requiredPluginId ) {
         try {
-            this.hotswap = clazz.getConstructor().newInstance();
+            // Find plugin by plugin id
+            @Nullable IdeaPluginDescriptor plugin = requiredPluginId == null ? null :
+                    PluginManager.getInstance().findEnabledPlugin( PluginId.getId( requiredPluginId ) );
+
+            // Skip implementation if not plugin is not available
+            if ( plugin == null || !plugin.isEnabled() ) {
+                return;
+            }
+
+            // Load implementation
+            this.hotswap = (IHotswap) Class.forName( className ).getConstructor().newInstance();
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -54,7 +77,7 @@ public enum EnumFileType {
         if ( file != null ) {
             for ( EnumFileType type : values() ) {
                 IHotswap instance = type.getInstance();
-                if ( instance.isPossible( file ) ) {
+                if ( instance != null && instance.isPossible( file ) ) {
                     return instance;
                 }
             }

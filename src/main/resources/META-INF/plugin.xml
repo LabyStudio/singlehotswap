@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>1.5</version>
+    <version>1.6</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
-    <idea-version since-build="201.000"/>
+    <idea-version since-build="203.000"/>
 
     <description><![CDATA[
     With this plugin you can hotswap <b>way faster</b> than usual by hotswapping <b>only the file opened</b> in the editor.<br>
@@ -17,9 +17,9 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.java</depends>
-    <depends>org.intellij.groovy</depends>
-    <depends>org.jetbrains.kotlin</depends>
+    <depends optional="true" config-file="singleHotSwap-java.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="singleHotSwap-groovy.xml">org.intellij.groovy</depends>
+    <depends optional="true" config-file="singleHotSwap-kotlin.xml">org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="SingleHotswap" displayType="BALLOON"/>
@@ -37,6 +37,10 @@
 
     <change-notes>
         <![CDATA[
+    v1.6 (13.06.2021):
+    <ul>
+      <li>Groovy, Kotlin and Java are no longer required plugins</li>
+    </ul>
     v1.5 (11.05.2021):
     <ul>
       <li>Support for groovy and kotlin files</li>
