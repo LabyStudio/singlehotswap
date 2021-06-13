@@ -38,17 +38,20 @@ public enum EnumFileType {
      * Creates and instance of the given implementation class for hot-swapping if the required plugin is available
      *
      * @param className        Hotswap implementation class
-     * @param requiredPluginId The required plugin for this hotswap type
+     * @param requiredPluginId The required plugin for this hotswap type. This can be null to skip the requirement.
      */
     EnumFileType( String className, String requiredPluginId ) {
         try {
-            // Find plugin by plugin id
-            @Nullable IdeaPluginDescriptor plugin = requiredPluginId == null ? null :
-                    PluginManager.getInstance().findEnabledPlugin( PluginId.getId( requiredPluginId ) );
+            // Check if plugin is required
+            if ( requiredPluginId != null ) {
 
-            // Skip implementation if not plugin is not available
-            if ( plugin == null || !plugin.isEnabled() ) {
-                return;
+                // Find plugin by plugin id
+                @Nullable IdeaPluginDescriptor plugin = PluginManager.getInstance().findEnabledPlugin( PluginId.getId( requiredPluginId ) );
+
+                // Skip implementation if not plugin is not available
+                if ( plugin == null || !plugin.isEnabled() ) {
+                    return;
+                }
             }
 
             // Load implementation
@@ -57,6 +60,7 @@ public enum EnumFileType {
             e.printStackTrace();
         }
     }
+
 
     /**
      * Get hotswap implementation for current type
