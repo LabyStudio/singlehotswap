@@ -11,13 +11,19 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.compiler.CompilerManager;
+import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager;
+import com.intellij.openapi.externalSystem.model.ProjectSystemId;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.task.ProjectTaskManager;
+import com.intellij.task.impl.ModuleFilesBuildTaskImpl;
 import net.labymod.intellij.singlehotswap.hotswap.EnumFileType;
 import net.labymod.intellij.singlehotswap.hotswap.IHotswap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -95,18 +101,18 @@ public class SingleHotswapAction extends CompileAction {
         if ( project != null && hotswap.isPossible( file ) ) {
 
             // Compile a single file
-            compileSingleFile( project, file.getVirtualFile(), success -> {
+            this.compileSingleFile( project, file.getVirtualFile(), success -> {
                 if ( !success ) {
-                    notifyUser( "Could not compile " + file.getName(), NotificationType.ERROR );
+                    this.notifyUser( "Could not compile " + file.getName(), NotificationType.ERROR );
                     return;
                 }
 
                 if ( !hotswap.hotswap( file ) ) {
-                    notifyUser( "Could not hotswap " + file.getName(), NotificationType.ERROR );
+                    this.notifyUser( "Could not hotswap " + file.getName(), NotificationType.ERROR );
                 }
             } );
         } else if ( file != null ) {
-            notifyUser( "Invalid file to hotswap: " + file.getName(), NotificationType.WARNING );
+            this.notifyUser( "Invalid file to hotswap: " + file.getName(), NotificationType.WARNING );
         }
     }
 
@@ -129,10 +135,32 @@ public class SingleHotswapAction extends CompileAction {
         // IntelliJ always reloads every single file that is referenced by the target class.
         settings.RUN_HOTSWAP_AFTER_COMPILE = DebuggerSettings.RUN_HOTSWAP_NEVER;
 
-        // Compile
-        projectTaskManager.compile( virtualFile ).onProcessed( result -> {
-            // Change the flag back to it's previous state
+        // Create task
+        ProjectFileIndex index = ProjectFileIndex.SERVICE.getInstance( project );
+        @Nullable Module module = index.getModuleForFile( virtualFile, false );
+        if ( module == null ) {
+            callback.accept( false );
+            return;
+        }
+
+        // Switch to IDE compiler
+        ExternalSystemModulePropertyManager propertyManager = ExternalSystemModulePropertyManager.getInstance( module );
+        String prevSystemIdName = propertyManager.getExternalSystemId();
+        @Nullable ProjectSystemId prevSystemId = prevSystemIdName == null ? null : ProjectSystemId.findById( prevSystemIdName );
+        if ( prevSystemId != null ) {
+            propertyManager.setExternalId( ProjectSystemId.IDE );
+        }
+
+        // Compile virtual file
+        ModuleFilesBuildTaskImpl task = new ModuleFilesBuildTaskImpl( module, true, virtualFile );
+        projectTaskManager.run( task ).onProcessed( result -> {
+            // Change the flag back to its previous state
             settings.RUN_HOTSWAP_AFTER_COMPILE = prevRunHotswap;
+
+            // Switch back to previous compiler
+            if ( prevSystemId != null ) {
+                propertyManager.setExternalId( prevSystemId );
+            }
 
             // Run callback with success state
             callback.accept( result != null && !result.hasErrors() );

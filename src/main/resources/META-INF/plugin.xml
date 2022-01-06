@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>1.6</version>
+    <version>1.7</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="203.000"/>
@@ -37,6 +37,10 @@
 
     <change-notes>
         <![CDATA[
+    v1.7 (06.01.2022):
+    <ul>
+      <li>Disabled Gradle runner during hotswap to speed up the compile process</li>
+    </ul>
     v1.6 (13.06.2021):
     <ul>
       <li>Groovy, Kotlin and Java are no longer required plugins</li>
