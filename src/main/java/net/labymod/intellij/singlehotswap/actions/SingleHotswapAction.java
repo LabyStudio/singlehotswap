@@ -10,6 +10,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager;
 import com.intellij.openapi.externalSystem.model.ProjectSystemId;
@@ -159,7 +160,7 @@ public class SingleHotswapAction extends CompileAction {
 
             // Switch back to previous compiler
             if ( prevSystemId != null ) {
-                propertyManager.setExternalId( prevSystemId );
+                ApplicationManager.getApplication().invokeLater( ( ) -> propertyManager.setExternalId( prevSystemId ) );
             }
 
             // Run callback with success state

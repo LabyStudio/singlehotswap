@@ -27,16 +27,17 @@ import java.util.Map;
  */
 public abstract class AbstractPsiHotswap<T> implements IHotswap {
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public boolean hotswap( PsiFile file ) {
         // Get name, file name and class name
         String fileName = file.getName();
-        String classNameWithoutPackage = fileName.substring( 0, fileName.toLowerCase().lastIndexOf( "." + getExtensionName() ) );
-        String packageName = getPackageName( (T) file );
+        String classNameWithoutPackage = fileName.substring( 0, fileName.toLowerCase().lastIndexOf( "." + this.getExtensionName() ) );
+        String packageName = this.getPackageName( (T) file );
 
         // Create the full class name
         String className = packageName.isEmpty() ? classNameWithoutPackage : ( packageName + "." + classNameWithoutPackage );
-        return hotswap( file.getProject(), classNameWithoutPackage, className );
+        return this.hotswap( file.getProject(), classNameWithoutPackage, className );
     }
 
     /**
@@ -87,7 +88,7 @@ public abstract class AbstractPsiHotswap<T> implements IHotswap {
                 files.put( className, new HotSwapFile( file ) );
 
                 // Hotswap files
-                return hotswap( project, files );
+                return this.hotswap( project, files );
             }
         }
 
