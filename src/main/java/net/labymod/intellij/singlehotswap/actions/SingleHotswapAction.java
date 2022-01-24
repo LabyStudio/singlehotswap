@@ -12,6 +12,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompilerManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager;
 import com.intellij.openapi.externalSystem.model.ProjectSystemId;
 import com.intellij.openapi.module.Module;
@@ -23,6 +24,7 @@ import com.intellij.task.ProjectTaskManager;
 import com.intellij.task.impl.ModuleFilesBuildTaskImpl;
 import net.labymod.intellij.singlehotswap.hotswap.EnumFileType;
 import net.labymod.intellij.singlehotswap.hotswap.IHotswap;
+import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +36,8 @@ import java.util.function.Consumer;
  * @author LabyStudio
  */
 public class SingleHotswapAction extends CompileAction {
+
+    private final SingleHotswapConfiguration configuration = ServiceManager.getService( SingleHotswapConfiguration.class );
 
     /**
      * Update the visibility of the single hotswap button
@@ -148,7 +152,7 @@ public class SingleHotswapAction extends CompileAction {
         ExternalSystemModulePropertyManager propertyManager = ExternalSystemModulePropertyManager.getInstance( module );
         String prevSystemIdName = propertyManager.getExternalSystemId();
         @Nullable ProjectSystemId prevSystemId = prevSystemIdName == null ? null : ProjectSystemId.findById( prevSystemIdName );
-        if ( prevSystemId != null ) {
+        if ( prevSystemId != null && this.configuration.isForceBuiltInCompiler() ) {
             propertyManager.setExternalId( ProjectSystemId.IDE );
         }
 
@@ -159,7 +163,7 @@ public class SingleHotswapAction extends CompileAction {
             settings.RUN_HOTSWAP_AFTER_COMPILE = prevRunHotswap;
 
             // Switch back to previous compiler
-            if ( prevSystemId != null ) {
+            if ( prevSystemId != null && this.configuration.isForceBuiltInCompiler() ) {
                 ApplicationManager.getApplication().invokeLater( ( ) -> propertyManager.setExternalId( prevSystemId ) );
             }
 

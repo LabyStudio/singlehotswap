@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="net.labymod.intellij.singlehotswap.storage.SingleHotswapConfigurationGui">
+  <grid id="5007" binding="panel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="3">
+    <constraints>
+      <xy x="0" y="0" width="712" height="79"/>
+    </constraints>
+    <properties>
+      <alignmentY value="0.0"/>
+      <minimumSize width="-1" height="-1"/>
+      <preferredSize width="-1" height="-1"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="a729c" class="javax.swing.JCheckBox" binding="checkBoxForceBuiltInCompiler">
+        <constraints/>
+        <properties>
+          <selected value="false"/>
+          <text value="Force Built-In Compiler"/>
+          <toolTipText value="Increases the speed of a hotswap for Gradle projects by using Intellij's internal compiler for single hotswaps."/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

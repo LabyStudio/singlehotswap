@@ -23,6 +23,12 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="SingleHotswap" displayType="BALLOON"/>
+
+        <!-- Settings Configuration -->
+        <applicationService id="CDSLanguageConfiguration"
+                            serviceImplementation="net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration"/>
+        <applicationConfigurable instance="net.labymod.intellij.singlehotswap.storage.SingleHotswapConfigurationGui"
+                                 id="debugger.singlehotswap" parentId="project.propDebugger" displayName="Single Hotswap"/>
     </extensions>
 
     <actions>
