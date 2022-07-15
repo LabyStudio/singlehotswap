@@ -13,8 +13,7 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
     private final SingleHotswapConfiguration state;
 
     private JPanel panel;
-
-    private JCheckBox checkBoxForceBuiltInCompiler;
+    private JTextField compilerId;
 
     public SingleHotswapConfigurationGui( ) {
         this.state = ServiceManager.getService( SingleHotswapConfiguration.class );
@@ -37,16 +36,16 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
 
     @Override
     public boolean isModified( ) {
-        return this.state.isForceBuiltInCompiler() != this.checkBoxForceBuiltInCompiler.isSelected();
+        return !this.state.getForceCompilerId().equals( this.compilerId.getText() );
     }
 
     @Override
     public void apply( ) {
-        this.state.setForceBuiltInCompiler( this.checkBoxForceBuiltInCompiler.isSelected() );
+        this.state.setForceCompilerId( this.compilerId.getText() );
     }
 
     @Override
     public void reset( ) {
-        this.checkBoxForceBuiltInCompiler.setSelected( this.state.isForceBuiltInCompiler() );
+        this.compilerId.setText( this.state.getForceCompilerId() );
     }
 }

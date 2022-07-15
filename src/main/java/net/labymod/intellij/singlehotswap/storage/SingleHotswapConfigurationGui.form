@@ -11,13 +11,15 @@
     </properties>
     <border type="none"/>
     <children>
-      <component id="a729c" class="javax.swing.JCheckBox" binding="checkBoxForceBuiltInCompiler">
+      <component id="d1aef" class="javax.swing.JLabel">
         <constraints/>
         <properties>
-          <selected value="false"/>
-          <text value="Force Built-In Compiler"/>
-          <toolTipText value="Increases the speed of a hotswap for Gradle projects by using Intellij's internal compiler for single hotswaps."/>
+          <text value="Force compiler id"/>
         </properties>
+      </component>
+      <component id="54f0b" class="javax.swing.JTextField" binding="compilerId" default-binding="true">
+        <constraints/>
+        <properties/>
       </component>
     </children>
   </grid>

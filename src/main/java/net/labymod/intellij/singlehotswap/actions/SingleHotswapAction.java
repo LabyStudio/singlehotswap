@@ -148,12 +148,22 @@ public class SingleHotswapAction extends CompileAction {
             return;
         }
 
-        // Switch to IDE compiler
+        // Switch compiler
         ExternalSystemModulePropertyManager propertyManager = ExternalSystemModulePropertyManager.getInstance( module );
+
         String prevSystemIdName = propertyManager.getExternalSystemId();
         @Nullable ProjectSystemId prevSystemId = prevSystemIdName == null ? null : ProjectSystemId.findById( prevSystemIdName );
-        if ( prevSystemId != null && this.configuration.isForceBuiltInCompiler() ) {
-            propertyManager.setExternalId( ProjectSystemId.IDE );
+
+        if ( prevSystemId != null && !this.configuration.getForceCompilerId().isEmpty() ) {
+            @Nullable ProjectSystemId systemId = ProjectSystemId.findById( this.configuration.getForceCompilerId() );
+            if ( systemId != null ) {
+                if ( !prevSystemId.getId().equals( systemId.getId() ) ) {
+                    propertyManager.setExternalId( systemId );
+                    this.notifyUser( "Switched from " + prevSystemId.getId() + " to " + systemId.getId() + " compiler", NotificationType.INFORMATION );
+                }
+            } else {
+                this.notifyUser( "Unknown compiler id: " + this.configuration.getForceCompilerId() + ". (Valid could be: IDE, GRADLE)", NotificationType.ERROR );
+            }
         }
 
         // Compile virtual file
@@ -161,11 +171,6 @@ public class SingleHotswapAction extends CompileAction {
         projectTaskManager.run( task ).onProcessed( result -> {
             // Change the flag back to its previous state
             settings.RUN_HOTSWAP_AFTER_COMPILE = prevRunHotswap;
-
-            // Switch back to previous compiler
-            if ( prevSystemId != null && this.configuration.isForceBuiltInCompiler() ) {
-                ApplicationManager.getApplication().invokeLater( ( ) -> propertyManager.setExternalId( prevSystemId ) );
-            }
 
             // Run callback with success state
             callback.accept( result != null && !result.hasErrors() );

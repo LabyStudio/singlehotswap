@@ -12,7 +12,7 @@ import java.util.Objects;
 @State( name = "SingleHotswapConfiguration", storages = @Storage( "singlehotswap.xml" ) )
 public class SingleHotswapConfiguration implements PersistentStateComponent<SingleHotswapConfiguration> {
 
-    private boolean forceBuiltInCompiler = false;
+    private String forceCompilerId = "";
 
     @Override
     public @Nullable SingleHotswapConfiguration getState( ) {
@@ -29,19 +29,19 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
         if ( this == o ) return true;
         if ( o == null || this.getClass() != o.getClass() ) return false;
         SingleHotswapConfiguration that = (SingleHotswapConfiguration) o;
-        return this.forceBuiltInCompiler == that.forceBuiltInCompiler;
+        return this.forceCompilerId.equals( that.forceCompilerId );
     }
 
     @Override
     public int hashCode( ) {
-        return Objects.hash( this.forceBuiltInCompiler );
+        return Objects.hash( this.forceCompilerId );
     }
 
-    public boolean isForceBuiltInCompiler( ) {
-        return this.forceBuiltInCompiler;
+    public String getForceCompilerId( ) {
+        return this.forceCompilerId;
     }
 
-    public void setForceBuiltInCompiler( boolean forceBuiltInCompiler ) {
-        this.forceBuiltInCompiler = forceBuiltInCompiler;
+    public void setForceCompilerId( String forceCompilerId ) {
+        this.forceCompilerId = forceCompilerId;
     }
 }
