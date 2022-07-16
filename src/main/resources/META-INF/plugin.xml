@@ -1,15 +1,15 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>1.7</version>
+    <version>2.0</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="203.000"/>
 
     <description><![CDATA[
-    With this plugin you can hotswap <b>way faster</b> than usual by hotswapping <b>only the file opened</b> in the editor.<br>
+    With this plugin you can context <b>way faster</b> than usual by hotswapping <b>only the file opened</b> in the editor.<br>
     The builtin feature of Intellij "Compile and Reload" always reloads every single file that is referenced by the target class.<br>
-    Therefore, this plugin gives you a better control what exactly you want to hotswap.<br>
+    Therefore, this plugin gives you a better control what exactly you want to context.<br>
     <br>
     <i>It will provide a blue hammer next to the green "Build Project" hammer.</i>
     <br>
@@ -28,7 +28,8 @@
         <applicationService id="CDSLanguageConfiguration"
                             serviceImplementation="net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration"/>
         <applicationConfigurable instance="net.labymod.intellij.singlehotswap.storage.SingleHotswapConfigurationGui"
-                                 id="debugger.singlehotswap" parentId="project.propDebugger" displayName="Single Hotswap"/>
+                                 id="debugger.singlehotswap" parentId="project.propDebugger"
+                                 displayName="Single Hotswap"/>
     </extensions>
 
     <actions>
@@ -43,9 +44,13 @@
 
     <change-notes>
         <![CDATA[
+    v2.0 (16.07.2022):
+    <ul>
+      <li>Implemented the built-in java compiler to speed up the compile process</li>
+    </ul>
     v1.7 (06.01.2022):
     <ul>
-      <li>Disabled Gradle runner during hotswap to speed up the compile process</li>
+      <li>Disabled Gradle runner during context to speed up the compile process</li>
     </ul>
     v1.6 (13.06.2021):
     <ul>
@@ -61,7 +66,7 @@
     </ul>
     v1.3 (17.02.2021):
     <ul>
-      <li>Fixed an exception during hotswap</li>
+      <li>Fixed an exception during context</li>
     </ul>
     v1.2 (19.01.2021):
     <ul>
