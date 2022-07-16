@@ -3,8 +3,7 @@
 ### Download from [IntelliJ Marketplace](https://plugins.jetbrains.com/plugin/14832-single-hotswap)
 
 With this plugin you can hotswap **50x faster** than usual by hotswapping **only the file opened** in the editor with
-the internal compiler of IntelliJ.<br>
-The built-in feature of Intellij "Compile and Reload" always reloads every single file that is referenced by the target
+the **internal compiler** of IntelliJ. The built-in feature of Intellij "Compile and Reload" always reloads every single file that is referenced by the target
 class.<br>
 Therefore, this plugin gives you a better control what exactly you want to hotswap.
 
