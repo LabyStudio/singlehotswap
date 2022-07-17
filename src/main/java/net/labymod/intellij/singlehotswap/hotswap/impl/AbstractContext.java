@@ -78,6 +78,17 @@ public abstract class AbstractContext<T> implements Context {
         for (File fileInPackage : filesInPackage) {
             String innerFullClassName = fileInPackage.getName();
 
+            // Check if it's a static kotlin file
+            if (innerFullClassName.equals(classFile.getClassName() + "Kt.class")) {
+                innerClasses.add(new ClassFile(
+                        classFile.getProject(),
+                        fileInPackage,
+                        classFile.getPackageName(),
+                        classFile.getClassName() + "Kt"
+                ));
+                continue;
+            }
+
             // Check if it's an inner class of the target class
             if (!innerFullClassName.startsWith(classFile.getClassName() + "$")) {
                 continue;
@@ -90,7 +101,7 @@ public abstract class AbstractContext<T> implements Context {
             }
 
             String subClassName = innerFileName.substring(0, innerFileName.lastIndexOf(".class"));
-            String innerClassName = classFile.getClassPath() + "$" + subClassName;
+            String innerClassName = classFile.getClassName() + "$" + subClassName;
 
             // Collect the inner class of the target class
             innerClasses.add(new ClassFile(
