@@ -16,9 +16,9 @@ import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 public class JavaContext extends AbstractContext<PsiJavaFile> {
 
     @Override
-    public AbstractCompiler compiler(SingleHotswapConfiguration configuration) {
+    public AbstractCompiler compiler(SingleHotswapConfiguration configuration, boolean forceDefault) {
         // Choose between built-in Java compiler or default compiler
-        return configuration.isUseBuiltInCompiler()
+        return configuration.isUseBuiltInCompiler() && !forceDefault
                 ? new BuiltInJavaCompiler(this)
                 : new DefaultCompiler(this);
     }

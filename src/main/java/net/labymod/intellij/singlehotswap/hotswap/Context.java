@@ -19,9 +19,10 @@ public interface Context {
      * Returns the compiler for this context
      *
      * @param configuration The configuration to use to modify the compiler settings
+     * @param forceDefault  Whether to force the default compiler
      * @return The compiler for this context
      */
-    AbstractCompiler compiler(SingleHotswapConfiguration configuration);
+    AbstractCompiler compiler(SingleHotswapConfiguration configuration, boolean forceDefault);
 
     /**
      * Returns the class file for the given PSI file

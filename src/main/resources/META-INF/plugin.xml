@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>2.1</version>
+    <version>2.2</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="203.000"/>
@@ -35,17 +35,29 @@
     </extensions>
 
     <actions>
-        <action id="org.intellij.sdk.action.PopupDialogAction"
+        <action id="SingleHotswap"
                 class="net.labymod.intellij.singlehotswap.actions.SingleHotswapAction"
                 text="Single Hotswap" description="Hotswap just the opened file"
                 icon="SingleHotSwapIcons.SINGLE_HOTSWAP">
             <add-to-group anchor="before" group-id="ToolbarRunGroup"
                           relative-to-action="RunConfiguration"/>
         </action>
+        <action id="SingleHotswapRedesign"
+                class="net.labymod.intellij.singlehotswap.actions.SingleHotswapAction"
+                text="Single Hotswap" description="Hotswap just the opened file"
+                icon="SingleHotSwapIcons.SINGLE_HOTSWAP_REDESIGN">
+            <add-to-group anchor="before" group-id="RunToolbarMainActionGroup"
+                          relative-to-action="MoreRunToolbarActions"/>
+        </action>
     </actions>
 
     <change-notes>
         <![CDATA[
+    v2.2 (15.12.2022):
+    <ul>
+      <li>Added hotswap button to new UI</li>
+      <li>Added option to force the default compiler when holding shift while clicking on the hotswap button</li>
+    </ul>
     v2.1 (17.07.2022):
     <ul>
       <li>Fixed support for kotlin & inner classes</li>

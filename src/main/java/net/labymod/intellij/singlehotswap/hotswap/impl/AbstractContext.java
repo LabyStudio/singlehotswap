@@ -29,7 +29,7 @@ import java.util.Map;
 public abstract class AbstractContext<T> implements Context {
 
     @Override
-    public AbstractCompiler compiler(SingleHotswapConfiguration configuration) {
+    public AbstractCompiler compiler(SingleHotswapConfiguration configuration, boolean forceDefault) {
         return new DefaultCompiler(this);
     }
 

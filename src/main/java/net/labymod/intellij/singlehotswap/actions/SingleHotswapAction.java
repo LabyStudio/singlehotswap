@@ -115,6 +115,7 @@ public class SingleHotswapAction extends CompileAction {
             // Get debugger session
             DebuggerManagerEx debuggerManager = DebuggerManagerEx.getInstanceEx(project);
             DebuggerSession debugger = debuggerManager.getContext().getDebuggerSession();
+            assert debugger != null;
 
             HotSwapProgressImpl progress = new HotSwapProgressImpl(project);
             try {
@@ -126,7 +127,8 @@ public class SingleHotswapAction extends CompileAction {
                 progress.setTitle("Initialize hotswap task...");
 
                 // Create compiler and progress
-                AbstractCompiler compiler = context.compiler(this.configuration);
+                boolean forceDefault = event.getInputEvent().isShiftDown();
+                AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
                 ClassFile outputFile = context.getClassFile(psiFile);
                 VirtualFile sourceFile = psiFile.getVirtualFile();
 
