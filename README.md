@@ -16,3 +16,4 @@ Therefore, this plugin gives you a better control what exactly you want to hotsw
 
 ![Hotswap button](.artwork/hotswap_button.png)
 ![One reloaded](.artwork/one_reloaded.png)
+![New UI](.artwork/new_ui.png)
