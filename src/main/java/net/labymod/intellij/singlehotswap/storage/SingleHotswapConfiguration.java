@@ -14,6 +14,7 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
 
     private boolean useBuiltInCompiler = true;
     private boolean showCompileDuration = true;
+    private boolean forceDefaultCompilerShift = false;
 
     @Override
     public @Nullable SingleHotswapConfiguration getState() {
@@ -31,12 +32,13 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
         if (o == null || this.getClass() != o.getClass()) return false;
         SingleHotswapConfiguration that = (SingleHotswapConfiguration) o;
         return this.useBuiltInCompiler == that.useBuiltInCompiler
-                && this.showCompileDuration == that.showCompileDuration;
+                && this.showCompileDuration == that.showCompileDuration
+                && this.forceDefaultCompilerShift == that.forceDefaultCompilerShift;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.useBuiltInCompiler, this.showCompileDuration);
+        return Objects.hash(this.useBuiltInCompiler, this.showCompileDuration, this.forceDefaultCompilerShift);
     }
 
     public boolean isUseBuiltInCompiler() {
@@ -53,5 +55,13 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
 
     public void setShowCompileDuration(boolean showCompileDuration) {
         this.showCompileDuration = showCompileDuration;
+    }
+
+    public boolean isForceDefaultCompilerShift() {
+        return this.forceDefaultCompilerShift;
+    }
+
+    public void setForceDefaultCompilerShift(boolean forceDefaultCompilerShift) {
+        this.forceDefaultCompilerShift = forceDefaultCompilerShift;
     }
 }

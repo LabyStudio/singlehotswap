@@ -127,7 +127,8 @@ public class SingleHotswapAction extends CompileAction {
                 progress.setTitle("Initialize hotswap task...");
 
                 // Create compiler and progress
-                boolean forceDefault = event.getInputEvent().isShiftDown();
+                boolean forceDefault = event.getInputEvent().isShiftDown()
+                        && this.configuration.isForceDefaultCompilerShift();
                 AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
                 ClassFile outputFile = context.getClassFile(psiFile);
                 VirtualFile sourceFile = psiFile.getVirtualFile();
