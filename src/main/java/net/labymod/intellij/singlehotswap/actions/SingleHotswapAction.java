@@ -117,66 +117,58 @@ public class SingleHotswapAction extends CompileAction {
             DebuggerSession debugger = debuggerManager.getContext().getDebuggerSession();
             assert debugger != null;
 
+            // Save the opened documents
+            FileDocumentManager.getInstance().saveAllDocuments();
+
+            // Create compiler and progress
+            boolean forceDefault = event.getInputEvent().isShiftDown()
+                    && this.configuration.isForceDefaultCompilerShift();
+            AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
+            ClassFile outputFile = context.getClassFile(psiFile);
+            VirtualFile sourceFile = psiFile.getVirtualFile();
+
+            // Execute progress
             HotSwapProgressImpl progress = new HotSwapProgressImpl(project);
-            try {
-                progress.setTitle("Saving opened documents...");
+            Application application = ApplicationManager.getApplication();
+            application.executeOnPooledThread(() -> {
+                ProgressManager.getInstance().runProcess(() -> {
+                    progress.setTitle("Compile classes...");
 
-                // Save the opened documents
-                FileDocumentManager.getInstance().saveAllDocuments();
+                    // Compile
+                    try {
+                        long start = System.currentTimeMillis();
 
-                progress.setTitle("Initialize hotswap task...");
-
-                // Create compiler and progress
-                boolean forceDefault = event.getInputEvent().isShiftDown()
-                        && this.configuration.isForceDefaultCompilerShift();
-                AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
-                ClassFile outputFile = context.getClassFile(psiFile);
-                VirtualFile sourceFile = psiFile.getVirtualFile();
-
-                // Execute application thread
-                Application application = ApplicationManager.getApplication();
-                application.executeOnPooledThread(() -> {
-                    ProgressManager.getInstance().runProcess(() -> {
-                        progress.setTitle("Compile classes...");
-
-                        try {
-                            long start = System.currentTimeMillis();
-
-                            // Compile the current opened file
-                            List<ClassFile> classFiles = compiler.compile(sourceFile, outputFile);
-                            if (classFiles.isEmpty()) {
-                                String message = "Could not compile " + psiFile.getName();
-                                progress.addMessage(debugger, MessageCategory.ERROR, message);
-                                return;
-                            }
-
-                            // Show compile duration
-                            long duration = System.currentTimeMillis() - start;
-                            if (this.configuration.isShowCompileDuration()) {
-                                String message = "Compiled " + classFiles.size() + " classes in " + duration + "ms";
-                                progress.addMessage(debugger, MessageCategory.STATISTICS, message);
-                            }
-                            progress.setTitle("Hotswap classes...");
-
-                            // Hotswap the file
-                            if (!context.hotswap(debugger, progress, classFiles)) {
-                                String message = "Could not hotswap " + psiFile.getName();
-                                progress.addMessage(debugger, MessageCategory.ERROR, message);
-                            }
-                        } catch (Exception e) {
-                            String message = "Error during hotswap: " + e.getMessage();
+                        // Compile the current opened file
+                        List<ClassFile> classFiles = compiler.compile(sourceFile, outputFile);
+                        if (classFiles.isEmpty()) {
+                            String message = "Could not compile " + psiFile.getName();
                             progress.addMessage(debugger, MessageCategory.ERROR, message);
+                            return;
                         }
 
-                        progress.setTitle("Hotswap completed");
-                        progress.finished();
-                    }, progress.getProgressIndicator());
-                });
-            } catch (Exception e) {
-                String message = "Can't initialize hotswap task: " + e.getMessage();
-                progress.addMessage(debugger, MessageCategory.ERROR, message);
-                progress.finished();
-            }
+                        // Show compile duration
+                        long duration = System.currentTimeMillis() - start;
+                        if (this.configuration.isShowCompileDuration()) {
+                            String message = "Compiled " + classFiles.size() + " classes in " + duration + "ms";
+                            progress.addMessage(debugger, MessageCategory.STATISTICS, message);
+                        }
+                        progress.setTitle("Hotswap classes...");
+
+                        // Hotswap the file
+                        if (!context.hotswap(debugger, progress, classFiles)) {
+                            String message = "Could not hotswap " + psiFile.getName();
+                            progress.addMessage(debugger, MessageCategory.ERROR, message);
+                        }
+                    } catch (Exception e) {
+                        String message = "Error during hotswap: " + e.getMessage();
+                        progress.addMessage(debugger, MessageCategory.ERROR, message);
+                    }
+
+                    // Finish the progress
+                    progress.setTitle("Hotswap completed");
+                    progress.finished();
+                }, progress.getProgressIndicator());
+            });
         } catch (Exception e) {
             this.notifyUser("Can't setup hotswap task: " + e.getMessage(), NotificationType.ERROR);
         }
