@@ -6,7 +6,6 @@ import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -35,15 +34,11 @@ public class BuiltInJavaCompiler extends AbstractCompiler {
     }
 
     @Override
-    public List<ClassFile> compile(VirtualFile sourceFile, ClassFile outputFile) throws Exception {
+    public List<ClassFile> compile(Module module, VirtualFile sourceFile, ClassFile outputFile) throws Exception {
         File file = VfsUtil.virtualToIoFile(sourceFile);
 
         // Find current module
         Project project = outputFile.getProject();
-        Module module = ProjectFileIndex.SERVICE.getInstance(project).getModuleForFile(sourceFile);
-        if (module == null) {
-            return new ArrayList<>();
-        }
 
         // Find the class files and the class version
         // We take the java version from the previously compiled class file by reading the header

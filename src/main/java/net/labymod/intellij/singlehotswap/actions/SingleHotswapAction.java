@@ -15,8 +15,10 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ui.MessageCategory;
@@ -110,6 +112,7 @@ public class SingleHotswapAction extends CompileAction {
             // Check if it is possible to hotswap the opened file
             if (!context.isPossible(psiFile)) {
                 this.notifyUser("Invalid file to hotswap: " + psiFile.getName(), NotificationType.WARNING);
+                return;
             }
 
             // Get debugger session
@@ -127,6 +130,12 @@ public class SingleHotswapAction extends CompileAction {
             ClassFile outputFile = context.getClassFile(psiFile);
             VirtualFile sourceFile = psiFile.getVirtualFile();
 
+            Module module = ProjectFileIndex.getInstance(project).getModuleForFile(sourceFile);
+            if (module == null) {
+                this.notifyUser("Could not find module for file: " + sourceFile.getName(), NotificationType.WARNING);
+                return;
+            }
+
             // Execute progress
             HotSwapProgressImpl progress = new HotSwapProgressImpl(project);
             Application application = ApplicationManager.getApplication();
@@ -139,7 +148,7 @@ public class SingleHotswapAction extends CompileAction {
                         long start = System.currentTimeMillis();
 
                         // Compile the current opened file
-                        List<ClassFile> classFiles = compiler.compile(sourceFile, outputFile);
+                        List<ClassFile> classFiles = compiler.compile(module, sourceFile, outputFile);
                         if (classFiles.isEmpty()) {
                             String message = "Could not compile " + psiFile.getName();
                             progress.addMessage(debugger, MessageCategory.ERROR, message);
