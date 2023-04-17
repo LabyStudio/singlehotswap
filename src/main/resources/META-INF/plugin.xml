@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>2.4</version>
+    <version>2.5</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="203.000"/>
@@ -53,7 +53,11 @@
 
     <change-notes>
         <![CDATA[
-    v2.4 (2022-03-06):
+    v2.5 (2023-04-17):
+    <ul>
+      <li>Fixed exception when hotswapping with IntelliJ 2023.1 using the new UI</li>
+    </ul>
+    v2.4 (2023-03-06):
     <ul>
       <li>Fixed an issue where the background task wouldn't finish if an error occurred</li>
     </ul>

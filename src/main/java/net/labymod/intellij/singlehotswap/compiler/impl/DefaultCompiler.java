@@ -3,7 +3,6 @@ package net.labymod.intellij.singlehotswap.compiler.impl;
 import com.intellij.debugger.settings.DebuggerSettings;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.task.ProjectTaskManager;
 import com.intellij.task.ProjectTaskManager.Result;
@@ -11,7 +10,6 @@ import com.intellij.task.impl.ModuleFilesBuildTaskImpl;
 import net.labymod.intellij.singlehotswap.compiler.AbstractCompiler;
 import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class DefaultCompiler extends AbstractCompiler {
     }
 
     @Override
-    public List<ClassFile> compile(VirtualFile sourceFile, ClassFile outputFile) throws Exception {
+    public List<ClassFile> compile(Module module, VirtualFile sourceFile, ClassFile outputFile) throws Exception {
         List<ClassFile> classFiles = new ArrayList<>();
 
         Project project = outputFile.getProject();
@@ -43,13 +41,6 @@ public class DefaultCompiler extends AbstractCompiler {
         // We disable the RUN_HOTSWAP_AFTER_COMPILE flag because the built-in hotswap of
         // IntelliJ always reloads every single file that is referenced by the target class.
         settings.RUN_HOTSWAP_AFTER_COMPILE = DebuggerSettings.RUN_HOTSWAP_NEVER;
-
-        // Create task
-        ProjectFileIndex index = ProjectFileIndex.SERVICE.getInstance(project);
-        @Nullable Module module = index.getModuleForFile(sourceFile, false);
-        if (module == null) {
-            return classFiles;
-        }
 
         // Compile virtual file
         ModuleFilesBuildTaskImpl task = new ModuleFilesBuildTaskImpl(module, true, sourceFile);
