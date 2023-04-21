@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>2.5</version>
+    <version>2.6</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="203.000"/>
@@ -53,6 +53,10 @@
 
     <change-notes>
         <![CDATA[
+    v2.6 (2023-04-21):
+    <ul>
+      <li>Filter only valid class files when trying to hotswap with the built-in compiler</li>
+    </ul>
     v2.5 (2023-04-17):
     <ul>
       <li>Fixed exception when hotswapping with IntelliJ 2023.1 using the new UI</li>

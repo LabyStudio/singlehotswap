@@ -13,7 +13,6 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompilerManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressManager;
@@ -38,7 +37,7 @@ import java.util.List;
  */
 public class SingleHotswapAction extends CompileAction {
 
-    private final SingleHotswapConfiguration configuration = ServiceManager.getService(SingleHotswapConfiguration.class);
+    private final SingleHotswapConfiguration configuration = ApplicationManager.getApplication().getService(SingleHotswapConfiguration.class);
 
     /**
      * Update the visibility of the single hotswap button

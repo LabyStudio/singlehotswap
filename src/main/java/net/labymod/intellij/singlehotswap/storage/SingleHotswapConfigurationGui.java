@@ -1,6 +1,6 @@
 package net.labymod.intellij.singlehotswap.storage;
 
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.util.ui.JBUI;
@@ -27,7 +27,7 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
     private JCheckBox checkBoxForceDefaultCompilerShift;
 
     public SingleHotswapConfigurationGui() {
-        this.state = ServiceManager.getService(SingleHotswapConfiguration.class);
+        this.state = ApplicationManager.getApplication().getService(SingleHotswapConfiguration.class);
     }
 
     @Override
