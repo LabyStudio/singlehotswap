@@ -89,8 +89,11 @@ public class BuiltInJavaCompiler extends AbstractCompiler {
             File compiledFile = new File(classObject.getPath());
             FileUtil.writeToFile(compiledFile, bytes);
 
-            // Add class file to list
-            classFiles.add(ClassFile.fromClassObject(project, classObject));
+            // filter out any non-class-objects generated (e. g. files from annotation processing)
+            if (classObject.getClassName() != null) {
+                // Add class file to list
+                classFiles.add(ClassFile.fromClassObject(project, classObject));
+            }
         }
         return classFiles;
     }
