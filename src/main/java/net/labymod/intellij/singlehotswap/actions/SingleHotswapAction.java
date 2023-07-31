@@ -4,7 +4,9 @@ import com.intellij.compiler.actions.CompileAction;
 import com.intellij.debugger.DebuggerManagerEx;
 import com.intellij.debugger.impl.DebuggerSession;
 import com.intellij.debugger.ui.HotSwapProgressImpl;
+import com.intellij.ide.actions.ShowSettingsUtilImpl;
 import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationAction;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -28,6 +30,7 @@ import net.labymod.intellij.singlehotswap.hotswap.FileType;
 import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -126,57 +129,69 @@ public class SingleHotswapAction extends CompileAction {
             boolean forceDefault = event.getInputEvent().isShiftDown()
                     && this.configuration.isForceDefaultCompilerShift();
             AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
-            ClassFile outputFile = context.getClassFile(psiFile);
-            VirtualFile sourceFile = psiFile.getVirtualFile();
 
-            Module module = ProjectFileIndex.getInstance(project).getModuleForFile(sourceFile);
-            if (module == null) {
-                this.notifyUser("Could not find module for file: " + sourceFile.getName(), NotificationType.WARNING);
-                return;
+            try {
+                ClassFile outputFile = context.getClassFile(psiFile);
+                VirtualFile sourceFile = psiFile.getVirtualFile();
+
+                Module module = ProjectFileIndex.getInstance(project).getModuleForFile(sourceFile);
+                if (module == null) {
+                    this.notifyUser("Could not find module for file: " + sourceFile.getName(), NotificationType.WARNING);
+                    return;
+                }
+
+                // Execute progress
+                HotSwapProgressImpl progress = new HotSwapProgressImpl(project);
+                Application application = ApplicationManager.getApplication();
+                application.executeOnPooledThread(() -> {
+                    ProgressManager.getInstance().runProcess(() -> {
+                        progress.setTitle("Compile classes...");
+
+                        // Compile
+                        try {
+                            long start = System.currentTimeMillis();
+
+                            // Compile the current opened file
+                            List<ClassFile> classFiles = compiler.compile(module, sourceFile, outputFile);
+                            if (classFiles.isEmpty()) {
+                                String message = "Could not compile " + psiFile.getName();
+                                progress.addMessage(debugger, MessageCategory.ERROR, message);
+                                return;
+                            }
+
+                            // Show compile duration
+                            long duration = System.currentTimeMillis() - start;
+                            if (this.configuration.isShowCompileDuration()) {
+                                String message = "Compiled " + classFiles.size() + " classes in " + duration + "ms";
+                                progress.addMessage(debugger, MessageCategory.STATISTICS, message);
+                            }
+                            progress.setTitle("Hotswap classes...");
+
+                            // Hotswap the file
+                            if (!context.hotswap(debugger, progress, classFiles)) {
+                                String message = "Could not hotswap " + psiFile.getName();
+                                progress.addMessage(debugger, MessageCategory.ERROR, message);
+                            }
+                        } catch (Exception e) {
+                            String message = "Error during hotswap: " + e.getMessage();
+                            progress.addMessage(debugger, MessageCategory.ERROR, message);
+                        }
+
+                        // Finish the progress
+                        progress.setTitle("Hotswap completed");
+                        progress.finished();
+                    }, progress.getProgressIndicator());
+                });
+            } catch (FileNotFoundException e) {
+                Notification notification = new Notification("SingleHotswap", "Single hotswap", e.getMessage(), NotificationType.ERROR);
+                notification.addAction(NotificationAction.create("Recompile", (anActionEvent, notification1) -> {
+                    CompilerManager.getInstance(project).compile(new VirtualFile[]{psiFile.getVirtualFile()}, null);
+                }));
+                notification.addAction(NotificationAction.create("Open settings", (anActionEvent, notification1) -> {
+                    ShowSettingsUtilImpl.getInstance().showSettingsDialog(project, "Gradle");
+                }));
+                Notifications.Bus.notify(notification);
             }
-
-            // Execute progress
-            HotSwapProgressImpl progress = new HotSwapProgressImpl(project);
-            Application application = ApplicationManager.getApplication();
-            application.executeOnPooledThread(() -> {
-                ProgressManager.getInstance().runProcess(() -> {
-                    progress.setTitle("Compile classes...");
-
-                    // Compile
-                    try {
-                        long start = System.currentTimeMillis();
-
-                        // Compile the current opened file
-                        List<ClassFile> classFiles = compiler.compile(module, sourceFile, outputFile);
-                        if (classFiles.isEmpty()) {
-                            String message = "Could not compile " + psiFile.getName();
-                            progress.addMessage(debugger, MessageCategory.ERROR, message);
-                            return;
-                        }
-
-                        // Show compile duration
-                        long duration = System.currentTimeMillis() - start;
-                        if (this.configuration.isShowCompileDuration()) {
-                            String message = "Compiled " + classFiles.size() + " classes in " + duration + "ms";
-                            progress.addMessage(debugger, MessageCategory.STATISTICS, message);
-                        }
-                        progress.setTitle("Hotswap classes...");
-
-                        // Hotswap the file
-                        if (!context.hotswap(debugger, progress, classFiles)) {
-                            String message = "Could not hotswap " + psiFile.getName();
-                            progress.addMessage(debugger, MessageCategory.ERROR, message);
-                        }
-                    } catch (Exception e) {
-                        String message = "Error during hotswap: " + e.getMessage();
-                        progress.addMessage(debugger, MessageCategory.ERROR, message);
-                    }
-
-                    // Finish the progress
-                    progress.setTitle("Hotswap completed");
-                    progress.finished();
-                }, progress.getProgressIndicator());
-            });
         } catch (Exception e) {
             this.notifyUser("Can't setup hotswap task: " + e.getMessage(), NotificationType.ERROR);
         }

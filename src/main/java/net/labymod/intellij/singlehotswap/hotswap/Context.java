@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile;
 import net.labymod.intellij.singlehotswap.compiler.AbstractCompiler;
 import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public interface Context {
      * @param psiFile The PSI file to get the class file for
      * @return The class file for the given PSI file
      */
-    ClassFile getClassFile(PsiFile psiFile);
+    ClassFile getClassFile(PsiFile psiFile) throws FileNotFoundException;
 
     /**
      * Returns a list of the inner classes of the given class file

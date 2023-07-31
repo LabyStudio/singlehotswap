@@ -15,6 +15,7 @@ import net.labymod.intellij.singlehotswap.hotswap.Context;
 import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class AbstractContext<T> implements Context {
 
     @SuppressWarnings("unchecked")
     @Override
-    public ClassFile getClassFile(PsiFile psiFile) {
+    public ClassFile getClassFile(PsiFile psiFile) throws FileNotFoundException {
         // Get name, file name and class name
         Project project = psiFile.getProject();
         String fileName = psiFile.getName();
@@ -60,7 +61,7 @@ public abstract class AbstractContext<T> implements Context {
         }
 
         // Could not find class file in output path
-        throw new RuntimeException("Could not find class file in output path");
+        throw new FileNotFoundException("Could not find class file in output path. Are you using the wrong compiler?");
     }
 
     @Override
