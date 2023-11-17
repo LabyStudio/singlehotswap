@@ -13,6 +13,7 @@ import net.labymod.intellij.singlehotswap.compiler.impl.DefaultCompiler;
 import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
 import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
+import org.jetbrains.kotlin.psi.KtFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,8 +50,9 @@ public abstract class AbstractContext<T> implements Context {
         String[] outputPaths = CompilerPaths.getOutputPaths(ModuleManager.getInstance(project).getModules());
         for (String outputPath : outputPaths) {
 
-            // Create file instance using the output path and the class name
-            File file = new File(String.format("%s/%s.class", outputPath, classPath.replace('.', '/')));
+            // Create file instance using the output path and the class name. Appends 'Kt' to the class path if source file is a Kotlin file.
+            String realClassPath = psiFile instanceof KtFile ? classPath + "Kt" : classPath;
+            File file = new File(String.format("%s/%s.class", outputPath, realClassPath.replace('.', '/')));
             if (!file.exists()) {
                 continue;
             }
