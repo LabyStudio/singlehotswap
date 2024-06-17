@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>2.6</version>
+    <version>2.7</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
     <idea-version since-build="203.000"/>
@@ -53,6 +53,10 @@
 
     <change-notes>
         <![CDATA[
+    v2.7 (2024-06-17):
+    <ul>
+      <li>Fixed an issue where the breakpoints couldn't find the local variables after a hotswap</li>
+    </ul>
     v2.6 (2023-04-21):
     <ul>
       <li>Filter only valid class files when trying to hotswap with the built-in compiler</li>
