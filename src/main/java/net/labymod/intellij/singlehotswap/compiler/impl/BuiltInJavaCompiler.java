@@ -48,7 +48,8 @@ public class BuiltInJavaCompiler extends AbstractCompiler {
         List<String> options = new ArrayList<>(Arrays.asList(
                 "-encoding", "UTF-8",
                 "-source", javaVersion,
-                "-target", javaVersion
+                "-target", javaVersion,
+                "-g" // Generate all debugging information
         ));
 
         // Collect dependencies
