@@ -13,9 +13,14 @@ public class ResourceIcon implements Icon {
 
     public ResourceIcon(String path) {
         IconManager manager = IconManager.getInstance();
+
+        // Basically, manager.getIcon(path, ResourceIcon.class.getClassLoader());
         Icon baseIcon;
         try {
-            baseIcon = manager.getIcon(path, ResourceIcon.class.getClassLoader());
+            // Jetbrains doesn't like it if we use methods that are not available in older versions, using reflection to avoid that...
+            // Available since IntelliJ IDEA 2023.2.7
+            Method getIcon = manager.getClass().getDeclaredMethod("getIcon", String.class, ClassLoader.class);
+            baseIcon = (Icon) getIcon.invoke(manager, path, ResourceIcon.class.getClassLoader());
         } catch (Throwable e) {
             // Support for older versions of IntelliJ IDEA (before 2023.2.7)
             try {
