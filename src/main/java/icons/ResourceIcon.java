@@ -11,7 +11,7 @@ public class ResourceIcon implements Icon {
     private final Icon baseIcon;
 
     public ResourceIcon(String path) {
-        this.baseIcon = IconManager.getInstance().getIcon(path, ResourceIcon.class);
+        this.baseIcon = IconManager.getInstance().getIcon(path, ResourceIcon.class.getClassLoader());
     }
 
     @Override

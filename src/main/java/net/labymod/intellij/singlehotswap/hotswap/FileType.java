@@ -26,6 +26,10 @@ public enum FileType {
             "org.jetbrains.kotlin"
     );
 
+    private final String className;
+
+    private final String requiredPluginId;
+
     /**
      * Hotswap implementation
      */
@@ -38,30 +42,10 @@ public enum FileType {
      * @param requiredPluginId The required plugin for this hotswap type. This can be null to skip the requirement.
      */
     FileType(String className, String requiredPluginId) {
-        if (className == null) {
-            return;
-        }
-
-        try {
-            // Check if plugin is required
-            if (requiredPluginId != null) {
-
-                // Find plugin by plugin id
-                @Nullable IdeaPluginDescriptor plugin = PluginManager.getInstance().findEnabledPlugin(PluginId.getId(requiredPluginId));
-
-                // Skip implementation if not plugin is not available
-                if (plugin == null || !plugin.isEnabled()) {
-                    return;
-                }
-            }
-
-            // Load implementation
-            this.context = (Context) Class.forName(className).getConstructor().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.className = className;
+        this.requiredPluginId = requiredPluginId;
+        this.context = null;
     }
-
 
     /**
      * Get the context implementation for the current type
@@ -69,7 +53,43 @@ public enum FileType {
      * @return Context implementation
      */
     public Context context() {
+        if (this.context == null) {
+            // Create context instance if not available
+            this.context = this.createContext();
+        }
         return this.context;
+    }
+
+    /**
+     * Create context instance
+     *
+     * @return Context instance or null if not available
+     */
+    private Context createContext() {
+        if (this.className == null) {
+            return null;
+        }
+
+        try {
+            // Check if plugin is required
+            if (this.requiredPluginId != null) {
+
+                // Find plugin by plugin id
+                // Note: Access plugin manager here because of #23
+                @Nullable IdeaPluginDescriptor plugin = PluginManager.getInstance().findEnabledPlugin(PluginId.getId(this.requiredPluginId));
+
+                // Skip implementation if not plugin is not available
+                if (plugin == null || !plugin.isEnabled()) {
+                    return null;
+                }
+            }
+
+            // Load implementation
+            return (Context) Class.forName(this.className).getConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

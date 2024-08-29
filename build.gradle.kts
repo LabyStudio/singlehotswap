@@ -1,27 +1,44 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.13.1"
+    id("org.jetbrains.intellij.platform") version "2.0.1"
 }
 
 group = "net.labymod.intellij"
 
 repositories {
     mavenCentral()
+
+    intellijPlatform {
+        releases()
+        marketplace()
+        defaultRepositories()
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
-intellij {
-    pluginName.set("Single Hotswap")
-    version.set("2023.1")
-    type.set("IC") // Target IDE Platform
-    plugins.set(listOf("Kotlin", "Groovy", "java", "properties"))
+intellijPlatform {
+    pluginConfiguration {
+        name = "Single Hotswap"
 
-    // Compatibility with future IDE versions
-    updateSinceUntilBuild.set(false)
+        ideaVersion {
+            sinceBuild = "203"
+            untilBuild = provider { null }
+        }
+    }
 }
 
 dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2024.2.0.2")
 
+        // https://plugins.jetbrains.com/docs/intellij/plugin-dependencies.html#bundled-and-other-plugins
+        bundledPlugin("com.intellij.java")
+        bundledPlugin("org.jetbrains.kotlin")
+        bundledPlugin("org.intellij.groovy")
+        bundledPlugin("com.intellij.properties")
+
+        instrumentationTools()
+    }
 }
 
 tasks {
