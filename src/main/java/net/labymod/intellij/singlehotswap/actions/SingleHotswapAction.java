@@ -14,6 +14,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.compiler.CompilationException;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
@@ -28,7 +29,6 @@ import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
 import net.labymod.intellij.singlehotswap.hotswap.FileType;
 import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -49,7 +49,7 @@ public class SingleHotswapAction extends CompileAction {
      * @param event AnActionEvent
      */
     @Override
-    public void update(@NotNull AnActionEvent event) {
+    public void update(AnActionEvent event) {
         Project project = event.getProject();
         Presentation presentation = event.getPresentation();
 
@@ -101,7 +101,7 @@ public class SingleHotswapAction extends CompileAction {
      * @param event AnActionEvent
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent event) {
+    public void actionPerformed(AnActionEvent event) {
         try {
             PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
             if (psiFile == null) {
@@ -172,6 +172,17 @@ public class SingleHotswapAction extends CompileAction {
                                 String message = "Could not hotswap " + psiFile.getName();
                                 progress.addMessage(debugger, MessageCategory.ERROR, message);
                             }
+                        } catch (CompilationException e) {
+                            StringBuilder output = new StringBuilder("Error during compilation:");
+                            for (CompilationException.Message message : e.getMessages()) {
+                                output.append("\n")
+                                        .append(message.getUrl())
+                                        .append(":")
+                                        .append(message.getLine())
+                                        .append(" ")
+                                        .append(message.getText());
+                            }
+                            progress.addMessage(debugger, MessageCategory.ERROR, output.toString());
                         } catch (Exception e) {
                             String message = "Error during hotswap: " + e.getMessage();
                             progress.addMessage(debugger, MessageCategory.ERROR, message);
