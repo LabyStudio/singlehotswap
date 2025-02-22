@@ -29,7 +29,9 @@ import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
 import net.labymod.intellij.singlehotswap.hotswap.FileType;
 import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
+import org.jetbrains.annotations.Nullable;
 
+import java.awt.event.InputEvent;
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -126,7 +128,8 @@ public class SingleHotswapAction extends CompileAction {
             FileDocumentManager.getInstance().saveAllDocuments();
 
             // Create compiler and progress
-            boolean forceDefault = event.getInputEvent().isShiftDown()
+            @Nullable InputEvent inputEvent = event.getInputEvent();
+            boolean forceDefault = inputEvent != null && inputEvent.isShiftDown()
                     && this.configuration.isForceDefaultCompilerShift();
             AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
 
