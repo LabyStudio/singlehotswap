@@ -34,6 +34,10 @@
                                  displayName="Single Hotswap"/>
     </extensions>
 
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <supportsKotlinPluginMode mode="stable" />
+    </extensions>
+
     <actions>
         <action id="SingleHotswap"
                 class="net.labymod.intellij.singlehotswap.actions.SingleHotswapAction"
