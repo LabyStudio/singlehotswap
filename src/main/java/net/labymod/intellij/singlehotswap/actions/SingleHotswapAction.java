@@ -25,6 +25,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ui.MessageCategory;
 import net.labymod.intellij.singlehotswap.compiler.AbstractCompiler;
+import net.labymod.intellij.singlehotswap.compiler.impl.DefaultCompiler;
 import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
 import net.labymod.intellij.singlehotswap.hotswap.FileType;
@@ -131,8 +132,17 @@ public class SingleHotswapAction extends CompileAction {
             @Nullable InputEvent inputEvent = event.getInputEvent();
             boolean forceDefault = inputEvent != null && inputEvent.isShiftDown()
                     && this.configuration.isForceDefaultCompilerShift();
-            AbstractCompiler compiler = context.compiler(this.configuration, forceDefault);
 
+            // Choose between custom compiler or default compiler
+            boolean useCustomCompiler = this.configuration.isUseBuiltInCompiler() && !forceDefault;
+            AbstractCompiler compiler = useCustomCompiler ? context.createCustomCompiler() : null;
+
+            // Use default compiler if no custom compiler is available
+            if (compiler == null) {
+                compiler = new DefaultCompiler(context);
+            }
+
+            AbstractCompiler finalCompiler = compiler;
             try {
                 ClassFile outputFile = context.getClassFile(psiFile);
                 VirtualFile sourceFile = psiFile.getVirtualFile();
@@ -155,7 +165,7 @@ public class SingleHotswapAction extends CompileAction {
                             long start = System.currentTimeMillis();
 
                             // Compile the current opened file
-                            List<ClassFile> classFiles = compiler.compile(module, sourceFile, outputFile);
+                            List<ClassFile> classFiles = finalCompiler.compile(module, sourceFile, outputFile);
                             if (classFiles.isEmpty()) {
                                 String message = "Could not compile " + psiFile.getName();
                                 progress.addMessage(debugger, MessageCategory.ERROR, message);
@@ -207,6 +217,7 @@ public class SingleHotswapAction extends CompileAction {
                 Notifications.Bus.notify(notification);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             this.notifyUser("Can't setup hotswap task: " + e.getMessage(), NotificationType.ERROR);
         }
     }

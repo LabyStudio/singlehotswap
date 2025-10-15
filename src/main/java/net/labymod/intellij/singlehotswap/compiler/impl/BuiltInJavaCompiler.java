@@ -14,11 +14,7 @@ import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Implementation for the built-in compiler of IntelliJ.
@@ -56,9 +52,15 @@ public class BuiltInJavaCompiler extends AbstractCompiler {
         List<File> classpath = new ArrayList<>();
         ModuleRootManager rootManager = ModuleRootManager.getInstance(module);
         for (String path : rootManager.orderEntries().compileOnly().recursively().exportedOnly().withoutSdk().getPathsList().getPathList()) {
+            if (path.contains("!")) {
+                continue;
+            }
             classpath.add(new File(path));
         }
         for (String path : rootManager.orderEntries().compileOnly().sdkOnly().getPathsList().getPathList()) {
+            if (path.contains("!")) {
+                continue;
+            }
             classpath.add(new File(path));
         }
 

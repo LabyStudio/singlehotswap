@@ -1,6 +1,8 @@
 package net.labymod.intellij.singlehotswap.hotswap.impl.type;
 
 import com.intellij.psi.PsiFile;
+import net.labymod.intellij.singlehotswap.compiler.AbstractCompiler;
+import net.labymod.intellij.singlehotswap.compiler.impl.CustomKotlinCompiler;
 import net.labymod.intellij.singlehotswap.hotswap.impl.AbstractContext;
 import org.jetbrains.kotlin.psi.KtFile;
 
@@ -10,6 +12,11 @@ import org.jetbrains.kotlin.psi.KtFile;
  * @author LabyStudio
  */
 public class KotlinContext extends AbstractContext<KtFile> {
+
+    @Override
+    public AbstractCompiler createCustomCompiler() {
+        return new CustomKotlinCompiler(this);
+    }
 
     @Override
     protected String getPackageName(KtFile file) {

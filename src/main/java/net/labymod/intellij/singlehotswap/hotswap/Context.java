@@ -4,7 +4,6 @@ import com.intellij.debugger.impl.DebuggerSession;
 import com.intellij.debugger.impl.HotSwapProgress;
 import com.intellij.psi.PsiFile;
 import net.labymod.intellij.singlehotswap.compiler.AbstractCompiler;
-import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -17,13 +16,11 @@ import java.util.List;
 public interface Context {
 
     /**
-     * Returns the compiler for this context
+     * Returns a custom compiler implementation for this context
      *
-     * @param configuration The configuration to use to modify the compiler settings
-     * @param forceDefault  Whether to force the default compiler
-     * @return The compiler for this context
+     * @return The custom compiler implementation for this context
      */
-    AbstractCompiler compiler(SingleHotswapConfiguration configuration, boolean forceDefault);
+    AbstractCompiler createCustomCompiler();
 
     /**
      * Returns the class file for the given PSI file

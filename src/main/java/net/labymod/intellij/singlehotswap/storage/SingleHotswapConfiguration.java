@@ -15,6 +15,7 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
     private boolean useBuiltInCompiler = true;
     private boolean showCompileDuration = true;
     private boolean forceDefaultCompilerShift = false;
+    private String kotlinCompilerPath = "kotlinc";
 
     @Override
     public @Nullable SingleHotswapConfiguration getState() {
@@ -33,12 +34,18 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
         SingleHotswapConfiguration that = (SingleHotswapConfiguration) o;
         return this.useBuiltInCompiler == that.useBuiltInCompiler
                 && this.showCompileDuration == that.showCompileDuration
-                && this.forceDefaultCompilerShift == that.forceDefaultCompilerShift;
+                && this.forceDefaultCompilerShift == that.forceDefaultCompilerShift
+                && Objects.equals(this.kotlinCompilerPath, that.kotlinCompilerPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.useBuiltInCompiler, this.showCompileDuration, this.forceDefaultCompilerShift);
+        return Objects.hash(
+                this.useBuiltInCompiler,
+                this.showCompileDuration,
+                this.forceDefaultCompilerShift,
+                this.kotlinCompilerPath
+        );
     }
 
     public boolean isUseBuiltInCompiler() {
@@ -63,5 +70,13 @@ public class SingleHotswapConfiguration implements PersistentStateComponent<Sing
 
     public void setForceDefaultCompilerShift(boolean forceDefaultCompilerShift) {
         this.forceDefaultCompilerShift = forceDefaultCompilerShift;
+    }
+
+    public String getKotlinCompilerPath() {
+        return this.kotlinCompilerPath;
+    }
+
+    public void setKotlinCompilerPath(String kotlinCompilerPath) {
+        this.kotlinCompilerPath = kotlinCompilerPath;
     }
 }

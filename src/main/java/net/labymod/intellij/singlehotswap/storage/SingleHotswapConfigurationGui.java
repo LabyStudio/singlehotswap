@@ -7,16 +7,10 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 
-import static java.awt.GridBagConstraints.NONE;
-import static java.awt.GridBagConstraints.NORTHWEST;
-import static java.awt.GridBagConstraints.RELATIVE;
+import static java.awt.GridBagConstraints.*;
 
 public class SingleHotswapConfigurationGui implements SearchableConfigurable, Configurable.NoScroll {
 
@@ -25,6 +19,7 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
     private JCheckBox checkBoxUseBuiltInCompiler;
     private JCheckBox checkBoxShowCompileDuration;
     private JCheckBox checkBoxForceDefaultCompilerShift;
+    private JTextField textFieldKotlinCompilerPath;
 
     public SingleHotswapConfigurationGui() {
         this.state = ApplicationManager.getApplication().getService(SingleHotswapConfiguration.class);
@@ -54,11 +49,22 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
         this.checkBoxForceDefaultCompilerShift = new JCheckBox("Force Default Compiler When Holding Shift");
         this.checkBoxForceDefaultCompilerShift.setToolTipText("Forces the default compiler when holding the shift key while pressing the hotswap button.");
 
+        this.textFieldKotlinCompilerPath = new JTextField();
+        this.textFieldKotlinCompilerPath.setToolTipText("Path to the kotlinc executable");
+        this.textFieldKotlinCompilerPath.setColumns(40);
+
+        JLabel labelKotlinCompiler = new JLabel("Kotlin Compiler Path:");
+
+        // Add checkboxes
         panel.add(this.checkBoxUseBuiltInCompiler, new GridBagConstraints(0, RELATIVE, 1, 1, 1.0, 0.0, NORTHWEST, NONE, JBUI.emptyInsets(), 0, 0));
         panel.add(this.checkBoxShowCompileDuration, new GridBagConstraints(0, RELATIVE, 1, 1, 1.0, 0.0, NORTHWEST, NONE, JBUI.insetsTop(4), 0, 0));
         panel.add(this.checkBoxForceDefaultCompilerShift, new GridBagConstraints(0, RELATIVE, 1, 1, 1.0, 0.0, NORTHWEST, NONE, JBUI.insetsTop(4), 0, 0));
-        container.add(panel);
 
+        // Label above text field
+        panel.add(labelKotlinCompiler, new GridBagConstraints(0, RELATIVE, 1, 1, 1.0, 0.0, NORTHWEST, NONE, JBUI.insetsTop(12), 0, 0));
+        panel.add(this.textFieldKotlinCompilerPath, new GridBagConstraints(0, RELATIVE, 1, 1, 1.0, 0.0, NORTHWEST, HORIZONTAL, JBUI.insetsTop(2), 0, 0));
+
+        container.add(panel);
         return container;
     }
 
@@ -66,7 +72,8 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
     public boolean isModified() {
         return this.state.isUseBuiltInCompiler() != this.checkBoxUseBuiltInCompiler.isSelected()
                 || this.state.isShowCompileDuration() != this.checkBoxShowCompileDuration.isSelected()
-                || this.state.isForceDefaultCompilerShift() != this.checkBoxForceDefaultCompilerShift.isSelected();
+                || this.state.isForceDefaultCompilerShift() != this.checkBoxForceDefaultCompilerShift.isSelected()
+                || !this.state.getKotlinCompilerPath().equals(this.textFieldKotlinCompilerPath.getText());
     }
 
     @Override
@@ -74,6 +81,7 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
         this.state.setUseBuiltInCompiler(this.checkBoxUseBuiltInCompiler.isSelected());
         this.state.setShowCompileDuration(this.checkBoxShowCompileDuration.isSelected());
         this.state.setForceDefaultCompilerShift(this.checkBoxForceDefaultCompilerShift.isSelected());
+        this.state.setKotlinCompilerPath(this.textFieldKotlinCompilerPath.getText());
     }
 
     @Override
@@ -81,5 +89,6 @@ public class SingleHotswapConfigurationGui implements SearchableConfigurable, Co
         this.checkBoxUseBuiltInCompiler.setSelected(this.state.isUseBuiltInCompiler());
         this.checkBoxShowCompileDuration.setSelected(this.state.isShowCompileDuration());
         this.checkBoxForceDefaultCompilerShift.setSelected(this.state.isForceDefaultCompilerShift());
+        this.textFieldKotlinCompilerPath.setText(this.state.getKotlinCompilerPath());
     }
 }

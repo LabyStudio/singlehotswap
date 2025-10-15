@@ -9,10 +9,8 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import net.labymod.intellij.singlehotswap.compiler.AbstractCompiler;
-import net.labymod.intellij.singlehotswap.compiler.impl.DefaultCompiler;
 import net.labymod.intellij.singlehotswap.hotswap.ClassFile;
 import net.labymod.intellij.singlehotswap.hotswap.Context;
-import net.labymod.intellij.singlehotswap.storage.SingleHotswapConfiguration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,8 +28,8 @@ import java.util.Map;
 public abstract class AbstractContext<T> implements Context {
 
     @Override
-    public AbstractCompiler compiler(SingleHotswapConfiguration configuration, boolean forceDefault) {
-        return new DefaultCompiler(this);
+    public AbstractCompiler createCustomCompiler() {
+        return null; // No custom compiler by default
     }
 
     @SuppressWarnings("unchecked")
