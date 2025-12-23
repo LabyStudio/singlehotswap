@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.0.1"
+    id("org.jetbrains.intellij.platform") version "2.10.5"
 }
 
 group = "net.labymod.intellij"
@@ -29,15 +29,13 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.2.0.2")
+        intellijIdea("2025.3")
 
         // https://plugins.jetbrains.com/docs/intellij/plugin-dependencies.html#bundled-and-other-plugins
         bundledPlugin("com.intellij.java")
         bundledPlugin("org.jetbrains.kotlin")
         bundledPlugin("org.intellij.groovy")
         bundledPlugin("com.intellij.properties")
-
-        instrumentationTools()
     }
 }
 
