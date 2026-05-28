@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>net.labymod.intellij.singlehotswap</id>
     <name>Single Hotswap</name>
-    <version>2.11</version>
+    <version>2.12</version>
     <vendor email="labystudio@gmail.com" url="https://www.labymod.net">LabyMedia</vendor>
 
-    <idea-version since-build="203.000"/>
+    <idea-version since-build="233.000"/>
 
     <description><![CDATA[
     With this plugin you can hotswap <b>50x faster</b> than usual by hotswapping <b>only the file opened</b> in the editor with the <b>internal compiler</b> of IntelliJ.
@@ -57,6 +57,10 @@
 
     <change-notes>
         <![CDATA[
+    v2.12 (2026-05-28):
+    <ul>
+      <li>Support latest IntelliJ versions</li>
+    </ul>
     v2.11 (2026-04-30):
     <ul>
       <li>Changed icon color to blue</li>

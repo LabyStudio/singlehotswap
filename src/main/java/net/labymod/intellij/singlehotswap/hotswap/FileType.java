@@ -1,7 +1,7 @@
 package net.labymod.intellij.singlehotswap.hotswap;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nullable;
@@ -76,10 +76,11 @@ public enum FileType {
 
                 // Find plugin by plugin id
                 // Note: Access plugin manager here because of #23
-                @Nullable IdeaPluginDescriptor plugin = PluginManager.getInstance().findEnabledPlugin(PluginId.getId(this.requiredPluginId));
+                PluginId pluginId = PluginId.getId(this.requiredPluginId);
+                @Nullable IdeaPluginDescriptor plugin = PluginManagerCore.getPlugin(pluginId);
 
-                // Skip implementation if not plugin is not available
-                if (plugin == null || !plugin.isEnabled()) {
+                // Skip implementation if plugin is not available
+                if (plugin == null || PluginManagerCore.isDisabled(pluginId)) {
                     return null;
                 }
             }

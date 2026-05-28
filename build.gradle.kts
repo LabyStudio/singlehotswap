@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.10.5"
+    id("org.jetbrains.intellij.platform") version "2.16.0"
 }
 
 group = "net.labymod.intellij"
@@ -21,7 +21,7 @@ intellijPlatform {
         name = "Single Hotswap"
 
         ideaVersion {
-            sinceBuild = "203"
+            sinceBuild = "233"
             untilBuild = provider { null }
         }
     }
@@ -29,7 +29,7 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2025.3")
+        intellijIdea("2026.1")
 
         // https://plugins.jetbrains.com/docs/intellij/plugin-dependencies.html#bundled-and-other-plugins
         bundledPlugin("com.intellij.java")
@@ -42,7 +42,6 @@ dependencies {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        options.release = 17
     }
 }
